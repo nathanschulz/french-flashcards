@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1">
+<title>French Cards</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="French">
+<meta name="theme-color" content="#0a84ff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<style>
+:root {
+  --bg: #f2f2f7;
+  --card: #ffffff;
+  --text: #000;
+  --muted: #8e8e93;
+  --accent: #0a84ff;
+  --good: #34c759;
+  --bad: #ff3b30;
+  --warn: #ff9f0a;
+  --border: rgba(0,0,0,0.08);
+  --shadow: 0 2px 14px rgba(0,0,0,0.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000;
+    --card: #1c1c1e;
+    --text: #fff;
+    --border: rgba(255,255,255,0.1);
+    --shadow: 0 2px 14px rgba(0,0,0,0.5);
+  }
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; height: 100%; overscroll-behavior: none; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  -webkit-user-select: none;
+}
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  font-size: 14px;
+  color: var(--muted);
+  min-height: 50px;
+}
+.header .title { font-weight: 600; color: var(--text); font-size: 17px; }
+.icon-btn {
+  width: 36px; height: 36px; border-radius: 18px;
+  background: var(--card); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; cursor: pointer; color: var(--text);
+  font-family: inherit;
+}
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 20px 20px;
+  min-height: 0;
+}
+.card-container {
+  flex: 1;
+  perspective: 1400px;
+  display: flex;
+  margin-bottom: 20px;
+  min-height: 0;
+}
+.card {
+  flex: 1;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+.card.flipped { transform: rotateY(180deg); }
+.face {
+  position: absolute; inset: 0;
+  background: var(--card);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  padding: 24px 22px;
+  display: flex;
+  flex-direction: column;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
+}
+.face.front {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.face.back {
+  transform: rotateY(180deg);
+  justify-content: flex-start;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.term {
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.pos-suffix {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-left: 8px;
+  letter-spacing: 0;
+}
+.tap-hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 28px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+.term-back {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  letter-spacing: -0.01em;
+}
+.source-cap {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+  letter-spacing: 0.2px;
+}
+.face.front .source-cap { margin-top: 14px; }
+.def-section { margin-top: 14px; }
+.def-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.def-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 15.5px;
+  line-height: 1.45;
+}
+.def-list li { margin-bottom: 3px; }
+.diff-pill {
+  align-self: flex-start;
+  padding: 3px 10px;
+  border-radius: 11px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+.face.front .diff-pill { align-self: center; margin-bottom: 18px; }
+.diff-B1 { background: rgba(52, 199, 89, 0.17); color: var(--good); }
+.diff-B2 { background: rgba(255, 159, 10, 0.17); color: var(--warn); }
+.diff-C1 { background: rgba(255, 59, 48, 0.17); color: var(--bad); }
+.diff-C2 { background: rgba(255, 59, 48, 0.17); color: var(--bad); }
+.diff-Unranked { background: rgba(120, 120, 128, 0.20); color: var(--muted); }
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.btn {
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+  padding: 17px;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 600;
+  font-family: inherit;
+  color: white;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.btn:active:not(:disabled) { transform: scale(0.97); }
+.btn:disabled { opacity: 0.3; cursor: default; }
+.btn.bad { background: var(--bad); }
+.btn.good { background: var(--good); }
+
+.empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 40px 20px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* Conjugation tables on card back */
+table.conj {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  font-size: 13px;
+}
+table.conj th, table.conj td {
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+table.conj th {
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+table.conj td:first-child, table.conj th:first-child {
+  font-weight: 600;
+}
+.conj-extra {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+/* Settings / sub-views */
+.scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.section-label {
+  margin: 22px 4px 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.section-label:first-child { margin-top: 4px; }
+.group {
+  background: var(--card);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.row {
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 16px;
+  min-height: 44px;
+}
+.row:last-child { border-bottom: none; }
+.row .muted { color: var(--muted); }
+.row .sub-label { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.row.indent { padding-left: 32px; }
+.toggle {
+  width: 51px; height: 31px; border-radius: 16px;
+  background: rgba(120,120,128,0.32);
+  position: relative;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.toggle::after {
+  content: '';
+  width: 27px; height: 27px;
+  border-radius: 14px;
+  background: white;
+  position: absolute;
+  top: 2px; left: 2px;
+  transition: transform 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+}
+.toggle.on { background: var(--good); }
+.toggle.on::after { transform: translateX(20px); }
+.danger { color: var(--bad); }
+.problem-name { font-weight: 600; font-size: 16px; }
+.problem-stats { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.problem-acc {
+  font-size: 15px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 10px;
+  background: rgba(255,59,48,0.14);
+  color: var(--bad);
+}
+.problem-acc.ok { background: rgba(255,159,10,0.14); color: var(--warn); }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="cards.js"></script>
+<script>
+const STORAGE_KEY = 'french-cards-stats-v1';
+const SETTINGS_KEY = 'french-cards-settings-v1';
+
+const ALL_LEVELS = ['B1', 'B2', 'C1', 'C2', 'Unranked'];
+
+function defaultSettings() {
+  // All texts on, all chapters on, all CEFR levels on, problem-only off
+  const s = {
+    texts: {},
+    chapters: {},
+    levels: {},
+    problemOnly: false,
+  };
+  for (const t of DATA.texts) s.texts[t.id] = true;
+  for (const c of DATA.chapters) s.chapters[c.id] = true;
+  for (const l of ALL_LEVELS) s.levels[l] = true;
+  return s;
+}
+
+function loadSettings() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(SETTINGS_KEY));
+    if (!stored) return defaultSettings();
+    // Merge: ensure newly-added texts/chapters default to ON
+    const def = defaultSettings();
+    for (const k of Object.keys(def.texts))   if (!(k in stored.texts))    stored.texts[k] = true;
+    for (const k of Object.keys(def.chapters)) if (!(k in stored.chapters)) stored.chapters[k] = true;
+    for (const k of ALL_LEVELS)               if (!(k in stored.levels))   stored.levels[k] = true;
+    if (typeof stored.problemOnly !== 'boolean') stored.problemOnly = false;
+    return stored;
+  } catch {
+    return defaultSettings();
+  }
+}
+function saveSettings() { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }
+
+function loadStats() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
+}
+function saveStats() { localStorage.setItem(STORAGE_KEY, JSON.stringify(stats)); }
+
+let stats = loadStats();
+let settings = loadSettings();
+let recentIds = [];
+let currentCard = null;
+let flipped = false;
+let view = 'card';
+
+function eligibleCards() {
+  return DATA.cards.filter(c => {
+    if (!settings.texts[c.textId]) return false;
+    if (!settings.chapters[c.chapterId]) return false;
+    if (!settings.levels[c.cefr]) return false;
+    if (settings.problemOnly) {
+      const s = stats[c.id];
+      if (!s || s.w === 0) return false;
+    }
+    return true;
+  });
+}
+
+function weightFor(card) {
+  const s = stats[card.id] || { c: 0, w: 0 };
+  let w = 1 + s.w * 2 - Math.min(s.c * 0.3, 0.8);
+  if (recentIds.includes(card.id)) w *= 0.05;
+  return Math.max(w, 0.05);
+}
+
+function pickNext() {
+  const pool = eligibleCards();
+  if (!pool.length) return null;
+  if (pool.length === 1) return pool[0];
+  const weights = pool.map(weightFor);
+  const total = weights.reduce((a,b) => a+b, 0);
+  let r = Math.random() * total;
+  for (let i = 0; i < pool.length; i++) {
+    r -= weights[i];
+    if (r <= 0) return pool[i];
+  }
+  return pool[pool.length - 1];
+}
+
+function recordAnswer(known) {
+  if (!currentCard) return;
+  const s = stats[currentCard.id] || { c: 0, w: 0 };
+  if (known) s.c++; else s.w++;
+  s.t = Date.now();
+  stats[currentCard.id] = s;
+  saveStats();
+  recentIds.push(currentCard.id);
+  if (recentIds.length > 5) recentIds.shift();
+  next();
+}
+
+function next() {
+  flipped = false;
+  currentCard = pickNext();
+  render();
+}
+
+function flipCard() {
+  if (!currentCard) return;
+  flipped = !flipped;
+  render();
+}
+
+function summaryStats() {
+  const ids = Object.keys(stats);
+  let totalC = 0, totalW = 0, problems = 0;
+  for (const id of ids) {
+    totalC += stats[id].c;
+    totalW += stats[id].w;
+    if (stats[id].w > 0 && stats[id].w >= stats[id].c) problems++;
+  }
+  return { totalC, totalW, problems, total: totalC + totalW };
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function textById(id) { return DATA.texts.find(t => t.id === id); }
+function chapterById(id) { return DATA.chapters.find(c => c.id === id); }
+
+function render() {
+  const app = document.getElementById('app');
+  if (view === 'card') app.innerHTML = renderCard();
+  else if (view === 'settings') app.innerHTML = renderSettings();
+  else if (view === 'problems') app.innerHTML = renderProblems();
+  attachHandlers();
+}
+
+function renderCard() {
+  const stat = summaryStats();
+  const accuracy = stat.total ? Math.round(100 * stat.totalC / stat.total) : 0;
+  if (!currentCard) {
+    return `
+      <div class="header">
+        <div></div>
+        <div class="title">French Cards</div>
+        <button class="icon-btn" data-action="settings">⚙</button>
+      </div>
+      <div class="main">
+        <div class="empty">No cards match your filters.<br><br>Open settings and enable at least one text, chapter, and CEFR level.</div>
+      </div>
+    `;
+  }
+  const c = currentCard;
+  const tx = textById(c.textId);
+  const ch = chapterById(c.chapterId);
+  const sourceCap = `${tx.shortName} · Ch. ${ch.number}${c.pages.length ? ' · p. ' + c.pages.join(', ') : ''}`;
+  const posSuffix = c.pos ? `<span class="pos-suffix">${escapeHtml(c.pos)}</span>` : '';
+
+  const frBlock = c.fr_defs.length ? `
+    <div class="def-section">
+      <div class="def-label">Français</div>
+      <ol class="def-list">${c.fr_defs.map(d => `<li>${escapeHtml(d)}</li>`).join('')}</ol>
+    </div>` : '';
+  const enBlock = c.en_defs.length ? `
+    <div class="def-section">
+      <div class="def-label">English</div>
+      <ol class="def-list">${c.en_defs.map(d => `<li>${escapeHtml(d)}</li>`).join('')}</ol>
+    </div>` : '';
+  const conjBlock = c.conjugationHTML ? `
+    <div class="def-section">
+      <div class="def-label">Conjugation</div>
+      ${c.conjugationHTML}
+    </div>` : '';
+
+  return `
+    <div class="header">
+      <div>${stat.total} answers · ${accuracy}%</div>
+      <button class="icon-btn" data-action="settings">⚙</button>
+    </div>
+    <div class="main">
+      <div class="card-container">
+        <div class="card${flipped ? ' flipped' : ''}" data-action="flip">
+          <div class="face front">
+            <div class="diff-pill diff-${escapeHtml(c.cefr)}">${escapeHtml(c.cefr)}</div>
+            <div class="term">${escapeHtml(c.lemma)}${posSuffix}</div>
+            <div class="source-cap">${escapeHtml(sourceCap)}</div>
+            <div class="tap-hint">Tap to reveal</div>
+          </div>
+          <div class="face back">
+            <div class="diff-pill diff-${escapeHtml(c.cefr)}">${escapeHtml(c.cefr)}</div>
+            <div class="term-back">${escapeHtml(c.lemma)}${posSuffix}</div>
+            <div class="source-cap">${escapeHtml(sourceCap)}</div>
+            ${frBlock}
+            ${enBlock}
+            ${conjBlock}
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn bad" data-action="wrong" ${flipped ? '' : 'disabled'}>Didn't know</button>
+        <button class="btn good" data-action="right" ${flipped ? '' : 'disabled'}>Knew it</button>
+      </div>
+    </div>
+  `;
+}
+
+function countCardsForText(textId) {
+  return DATA.cards.filter(c => c.textId === textId).length;
+}
+function countCardsForChapter(chId) {
+  return DATA.cards.filter(c => c.chapterId === chId).length;
+}
+function countCardsForLevel(level) {
+  return DATA.cards.filter(c => c.cefr === level).length;
+}
+
+function renderSettings() {
+  const stat = summaryStats();
+  const accuracy = stat.total ? Math.round(100 * stat.totalC / stat.total) : 0;
+  const eligible = eligibleCards().length;
+
+  const textsHtml = DATA.texts.map(t => {
+    const n = countCardsForText(t.id);
+    const sub = `${escapeHtml(t.author)} · ${n} cards`;
+    return `<div class="row" data-action="toggle-text" data-key="${t.id}">
+      <div><div>${escapeHtml(t.name)}</div><div class="sub-label">${sub}</div></div>
+      <div class="toggle ${settings.texts[t.id] ? 'on' : ''}"></div>
+    </div>`;
+  }).join('');
+
+  // Chapters grouped under their text (only enabled-text chapters shown)
+  const chaptersByText = {};
+  for (const ch of DATA.chapters) {
+    if (!settings.texts[ch.textId]) continue;
+    (chaptersByText[ch.textId] ||= []).push(ch);
+  }
+  const chHtml = Object.keys(chaptersByText).map(tid => {
+    const tx = textById(tid);
+    const rows = chaptersByText[tid].map(ch => {
+      const n = countCardsForChapter(ch.id);
+      return `<div class="row indent" data-action="toggle-chapter" data-key="${ch.id}">
+        <div><div>Ch. ${ch.number}: ${escapeHtml(ch.title)}</div><div class="sub-label">${n} cards</div></div>
+        <div class="toggle ${settings.chapters[ch.id] ? 'on' : ''}"></div>
+      </div>`;
+    }).join('');
+    return `<div class="section-label">Chapters · ${escapeHtml(tx.shortName)}</div><div class="group">${rows}</div>`;
+  }).join('');
+
+  const levelsHtml = ALL_LEVELS.map(l => {
+    const n = countCardsForLevel(l);
+    return `<div class="row" data-action="toggle-level" data-key="${l}">
+      <div><div>${l}</div><div class="sub-label">${n} cards</div></div>
+      <div class="toggle ${settings.levels[l] ? 'on' : ''}"></div>
+    </div>`;
+  }).join('');
+
+  return `
+    <div class="header">
+      <div style="width:36px"></div>
+      <div class="title">Settings</div>
+      <button class="icon-btn" data-action="back">×</button>
+    </div>
+    <div class="main">
+      <div class="scroll">
+        <div class="section-label">Texts</div>
+        <div class="group">${textsHtml}</div>
+        ${chHtml}
+        <div class="section-label">CEFR Level</div>
+        <div class="group">${levelsHtml}</div>
+        <div class="section-label">Focus mode</div>
+        <div class="group">
+          <div class="row" data-action="toggle-flag" data-key="problemOnly"><span>Only problem words</span><div class="toggle ${settings.problemOnly ? 'on' : ''}"></div></div>
+        </div>
+        <div class="section-label">Stats</div>
+        <div class="group">
+          <div class="row"><span>Cards in active pool</span><span class="muted">${eligible}</span></div>
+          <div class="row"><span>Total answers</span><span class="muted">${stat.total}</span></div>
+          <div class="row"><span>Accuracy</span><span class="muted">${accuracy}%</span></div>
+          <div class="row"><span>Problem words</span><span class="muted">${stat.problems}</span></div>
+        </div>
+        <div class="section-label">Lists</div>
+        <div class="group">
+          <div class="row" data-action="problems"><span>View problem words</span><span class="muted">›</span></div>
+        </div>
+        <div class="section-label">&nbsp;</div>
+        <div class="group">
+          <div class="row danger" data-action="reset"><span>Reset all progress</span></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderProblems() {
+  const list = DATA.cards
+    .map(c => ({ c, s: stats[c.id] || { c: 0, w: 0 } }))
+    .filter(x => x.s.w > 0)
+    .sort((a, b) => {
+      const aRate = a.s.w / (a.s.c + a.s.w);
+      const bRate = b.s.w / (b.s.c + b.s.w);
+      if (bRate !== aRate) return bRate - aRate;
+      return b.s.w - a.s.w;
+    });
+  let body;
+  if (!list.length) {
+    body = `<div class="empty">No problem words yet.<br><br>Cards you mark "Didn't know" will show up here, sorted by miss rate.</div>`;
+  } else {
+    body = `<div class="group">${list.map(({c, s}) => {
+      const total = s.c + s.w;
+      const acc = total ? Math.round(100 * s.c / total) : 0;
+      const accClass = acc >= 50 ? 'ok' : '';
+      const tx = textById(c.textId);
+      const ch = chapterById(c.chapterId);
+      return `<div class="row">
+        <div>
+          <div class="problem-name">${escapeHtml(c.lemma)} <span class="muted" style="font-weight:400">${escapeHtml(c.pos)} · ${escapeHtml(c.cefr)}</span></div>
+          <div class="problem-stats">${escapeHtml(tx.shortName)} · Ch. ${ch.number} · ${s.c} right · ${s.w} wrong</div>
+        </div>
+        <div class="problem-acc ${accClass}">${acc}%</div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+  return `
+    <div class="header">
+      <button class="icon-btn" data-action="settings">‹</button>
+      <div class="title">Problem Words</div>
+      <div style="width:36px"></div>
+    </div>
+    <div class="main">
+      <div class="scroll">${body}</div>
+    </div>
+  `;
+}
+
+function attachHandlers() {
+  document.querySelectorAll('[data-action]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      const action = el.dataset.action;
+      const key = el.dataset.key;
+      if (action === 'flip') flipCard();
+      else if (action === 'right') recordAnswer(true);
+      else if (action === 'wrong') recordAnswer(false);
+      else if (action === 'settings') { view = 'settings'; render(); }
+      else if (action === 'back') { view = 'card'; if (!currentCard) next(); else render(); }
+      else if (action === 'problems') { view = 'problems'; render(); }
+      else if (action === 'toggle-text') {
+        settings.texts[key] = !settings.texts[key];
+        // Cascading: if a text is off, also mark its chapters off (but remember their original state implicitly via the per-chapter toggle)
+        saveSettings();
+        if (view === 'card') next(); else render();
+      }
+      else if (action === 'toggle-chapter') {
+        settings.chapters[key] = !settings.chapters[key];
+        saveSettings();
+        if (view === 'card') next(); else render();
+      }
+      else if (action === 'toggle-level') {
+        settings.levels[key] = !settings.levels[key];
+        saveSettings();
+        if (view === 'card') next(); else render();
+      }
+      else if (action === 'toggle-flag') {
+        settings[key] = !settings[key];
+        saveSettings();
+        if (view === 'card') next(); else render();
+      }
+      else if (action === 'reset') {
+        if (confirm('Reset all progress? This cannot be undone.')) {
+          stats = {};
+          saveStats();
+          render();
+        }
+      }
+    });
+  });
+}
+
+next();
+</script>
+</body>
+</html>
